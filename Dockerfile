@@ -8,15 +8,17 @@ WORKDIR /build
 COPY pom.xml .
 COPY src ./src
 
-# Просто компилируем проект БЕЗ лишних команд переименования
+# Компилируем чистый JAR
 RUN mvn clean package -DskipTests
 
 # Этап 2: Минимальный запуск бота в облаке
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 
-# Копируем затененный JAR-файл напрямую с помощью надежной маски путей
-COPY --from=builder /build/target/*shaded.jar ./app.jar
+# Копируем всю папку target целиком во избежание ошибок масок имен
+COPY --from=builder /build/target /app/target
 
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+
+# Запускаем затененный JAR напрямую по его физическому пути из логов компиляции
+ENTRYPOINT ["java", "-jar", "/app/target/munich-teleg-bot-1.0-SNAPSHOT-shaded.jar"]
