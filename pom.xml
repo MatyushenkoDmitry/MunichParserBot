@@ -15,16 +15,16 @@
     </properties>
 
     <dependencies>
-        <!-- Библиотеки Telegram -->
+        <!-- Библиотеки Telegram (ИСПРАВИЛИ НА РЕАЛЬНУЮ ВЕРСИЮ 7.10.0) -->
         <dependency>
             <groupId>org.telegram</groupId>
             <artifactId>telegrambots-client</artifactId>
-            <version>7.1.0</version>
+            <version>7.10.0</version>
         </dependency>
         <dependency>
             <groupId>org.telegram</groupId>
             <artifactId>telegrambots-longpolling</artifactId>
-            <version>7.1.0</version>
+            <version>7.10.0</version>
         </dependency>
     </dependencies>
 
