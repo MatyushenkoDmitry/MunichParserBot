@@ -15,8 +15,8 @@ RUN mvn clean package -DskipTests
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 
-# Копируем затененный JAR-файл, используя его точное имя из логов сборки Maven
-COPY --from=builder /build/target/munich-teleg-bot-1.0-SNAPSHOT-shaded.jar app.jar
+# Абсолютно универсальное копирование любого созданного затененного JAR-файла
+COPY --from=builder /build/target/*shaded.jar app.jar
 
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
