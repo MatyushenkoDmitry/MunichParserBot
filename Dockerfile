@@ -16,7 +16,7 @@ FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 
 # Абсолютно универсальное копирование любого созданного JAR-файла
-COPY --from=builder /build/target/*.jar app.jar
+COPY --from=builder /build/target/*shaded.jar app.jar
 
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
