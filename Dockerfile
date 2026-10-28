@@ -15,10 +15,10 @@ RUN mvn clean package -DskipTests
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 
-# Копируем всю папку target целиком во избежание ошибок масок имен
-COPY --from=builder /build/target /app/target
+# Копируем созданный JAR напрямую в корень рабочей директории как app.jar
+COPY --from=builder /build/target/*shaded.jar ./app.jar
 
 EXPOSE 8080
 
-# Запускаем затененный JAR напрямую по его физическому пути из логов компиляции
-ENTRYPOINT ["java", "-jar", "/app/target/munich-teleg-bot-1.0-SNAPSHOT-shaded.jar"]
+# Запускаем файл прямо из текущей рабочей директории
+ENTRYPOINT ["java", "-jar", "app.jar"]
