@@ -1,32 +1,25 @@
 name: Munich Slot Parser
 
-# Настройка запуска по расписанию
 on:
   schedule:
-    # Запускать каждые 5 минут круглые сутки (международный стандарт Cron)
     - cron: '*/5 * * * *'
-  # Позволяет также запускать бота вручную кнопкой из интерфейса GitHub
   workflow_dispatch:
 
 jobs:
   run-parser:
     runs-on: ubuntu-latest
     steps:
-      # 1. Скачиваем код из репозитория
       - name: Checkout repository code
         uses: actions/checkout@v3
 
-      # 2. Устанавливаем чистый Python
       - name: Set up Python
-        uses: actions/with-python@v4
+        uses: actions/setup-python@v4
         with:
           python-version: '3.10'
 
-      # 3. Устанавливаем библиотеку для запросов
       - name: Install dependencies
         run: pip install requests
 
-      # 4. Запускаем наш скрипт и передаем ему секретные ключи
       - name: Run bot script
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
