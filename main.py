@@ -4,7 +4,7 @@ import os
 
 # Робот автоматически и безопасно прочитает ключи из панели настроек Render
 BOT_TOKEN = os.getenv("BOT_TOKEN")
-MY_CHAT_ID = os.getenv("MY_CHAT_ID")
+CHAT_ID = os.getenv("CHAT_ID")
 
 def send_telegram(message):
     if not BOT_TOKEN or not CHAT_ID:
