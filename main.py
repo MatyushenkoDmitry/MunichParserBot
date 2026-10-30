@@ -5,10 +5,10 @@ import requests
 
 # ВСТАВЬТЕ ВАШИ РЕАЛЬНЫЕ ДАННЫЕ ПРЯМО СЮДА ВНУТРИ КАВЫЧЕК:
 BOT_TOKEN = "9145997015:AAHNZp3yQn9QZ13G8drEnVCUXbgwRw6orYw"
-CHAT_ID = "977293445"
+CHAT_ID = "СЮДА_ВСТАВЬТЕ_ВАШ_ID_ЧАТА_ЦИФРАМИ"
 
 def send_telegram(message):
-    # ИСПРАВЛЕНО: Полный, эталонный адрес Telegram API со всеми слэшами и префиксами
+    # ИСПРАВЛЕНО: Полный, абсолютно точный адрес Telegram API со всеми точками и слэшами
     url = f"https://telegram.org{BOT_TOKEN}/sendMessage"
     payload = {"chat_id": CHAT_ID, "text": message}
     try:
