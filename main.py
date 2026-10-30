@@ -8,8 +8,13 @@ BOT_TOKEN = "9145997015:AAHNZp3yQn9QZ13G8drEnVCUXbgwRw6orYw"
 CHAT_ID = "977293445"
 
 def send_telegram(message):
-    # ИСПРАВЛЕНО: Полный, абсолютно точный адрес Telegram API со всеми точками и слэшами
-    url = f"https://telegram.org{BOT_TOKEN}/sendMessage"
+    # Собираем адрес по кусочкам, чтобы хостинг ничего не склеил и не стер
+    part1 = "https://"
+    part2 = "api."
+    part3 = "telegram.org"
+    part4 = "/bot"
+    
+    url = part1 + part2 + part3 + part4 + BOT_TOKEN + "/sendMessage"
     payload = {"chat_id": CHAT_ID, "text": message}
     try:
         response = requests.post(url, json=payload)
