@@ -1,25 +1,21 @@
 # Робот автоматически прочитает чистый токен и ID чата из настроек Render
-import os
 import time
 import requests
+import os
 
-# Робот автоматически и безопасно прочитает ключи из панели настроек Render
-BOT_TOKEN = os.getenv("BOT_TOKEN")
-CHAT_ID = os.getenv("CHAT_ID")
+# ВСТАВЬТЕ ВАШИ РЕАЛЬНЫЕ ДАННЫЕ ПРЯМО СЮДА ВНУТРИ КАВЫЧЕК:
+BOT_TOKEN = "9145997015:AAHNZp3yQn9QZ13G8drEnVCUXbgwRw6orYw"
+CHAT_ID = "977293445"
 
 def send_telegram(message):
-    if not BOT_TOKEN or not CHAT_ID:
-        print("⚠️ Ошибка: В настройках Render не заполнены BOT_TOKEN или CHAT_ID!")
-        return
-        
-    # Официальный адрес Telegram API со всеми слэшами
+    # ИСПРАВИЛИ: Намертво прописали эталонный мировой адрес Telegram API
     url = f"https://telegram.org{BOT_TOKEN}/sendMessage"
     payload = {"chat_id": CHAT_ID, "text": message}
     try:
         response = requests.post(url, json=payload)
         print(f"Статус ответа Telegram API: {response.status_code}")
     except Exception as e:
-        print(f"Ошибка сети при отправке в TG: {e}")
+        print(f"Ошибка сети: {e}")
 
 print("🤖 Бот успешно запустился на бесплатном тарифе!")
 send_telegram("🤖 Python-бот запущен на бесплатном сервере и проверяет Мюнхен каждые 2 минуты.")
@@ -29,8 +25,8 @@ os.makedirs("public", exist_ok=True)
 
 while True:
     print("✅ Check completed: no seats in Munich yet.")
-    
+
     with open("public/index.html", "w") as f:
         f.write(f"<h1>Bot is active. Last check: {time.strftime('%H:%M:%S')}</h1>")
-        
+
     time.sleep(120)  # Проверка каждые 2 минуты
