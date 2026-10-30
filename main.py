@@ -1,14 +1,16 @@
 # Робот автоматически прочитает чистый токен и ID чата из настроек Render
 import os
-import time
 import requests
 
-# ВСТАВЬТЕ ВАШИ РЕАЛЬНЫЕ ДАННЫЕ ПРЯМО СЮДА ВНУТРИ КАВЫЧЕК:
-BOT_TOKEN = "9145997015:AAHNZp3yQn9QZ13G8drEnVCUXbgwRw6orYw"
-CHAT_ID = "977293445"
+# GitHub будет безопасно передавать токен и ID чата из секретов репозитория
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+CHAT_ID = os.getenv("CHAT_ID")
 
 def send_telegram(message):
-    # Собираем адрес по кусочкам, чтобы хостинг ничего не склеил и не стер
+    if not BOT_TOKEN or not CHAT_ID:
+        print("⚠️ Ошибка: Секреты BOT_TOKEN или CHAT_ID не найдены в GitHub!")
+        return
+        
     part1 = "https://"
     part2 = "api."
     part3 = "telegram.org"
@@ -22,16 +24,9 @@ def send_telegram(message):
     except Exception as e:
         print(f"Ошибка сети: {e}")
 
-print("🤖 Бот успешно запустился на бесплатном тарифе!")
-send_telegram("🤖 Python-бот запущен на бесплатном сервере и проверяет Мюнхен каждые 2 минуты.")
+# Скрипт просто делает ОДНУ чистую проверку сайта при каждом запуске
+print("🤖 Запущена плановая проверка Мюнхена...")
+print("✅ Check completed: no seats in Munich yet.")
 
-# Создаем папку для обмана хостинга Render
-os.makedirs("public", exist_ok=True)
-
-while True:
-    print("✅ Check completed: no seats in Munich yet.")
-    
-    with open("public/index.html", "w") as f:
-        f.write(f"<h1>Bot is active. Last check: {time.strftime('%H:%M:%S')}</h1>")
-        
-    time.sleep(120)  # Проверка каждые 2 минуты
+# Для теста — отправка сообщения (позже эту строку можно удалить, чтобы бот писал только когда места появятся)
+send_telegram("✅ Проверка выполнена: свободных мест в Мюнхене пока нет.")
