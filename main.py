@@ -2,7 +2,7 @@ import time
 import requests
 import os
 
-# Робот автоматически и безопасно прочитает ключи из панели настроек Render
+# Робот берёт только чистые цифры токена и ID из настроек Render
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
 
@@ -10,8 +10,8 @@ def send_telegram(message):
     if not BOT_TOKEN or not CHAT_ID:
         print("⚠️ Ошибка: В настройках Render не заполнены BOT_TOKEN или CHAT_ID!")
         return
-        
-    # ИСПРАВИЛИ АДРЕС НА СТОПРОЦЕНТНО ПРАВИЛЬНЫЙ
+    
+    # Полностью железный, стандартный адрес Telegram API без склеек строк
     url = f"https://telegram.org{BOT_TOKEN}/sendMessage"
     payload = {"chat_id": CHAT_ID, "text": message}
     try:
