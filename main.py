@@ -5,7 +5,7 @@ import requests
 
 # ВСТАВЬТЕ ВАШИ РЕАЛЬНЫЕ ДАННЫЕ ПРЯМО СЮДА ВНУТРИ КАВЫЧЕК:
 BOT_TOKEN = "9145997015:AAHNZp3yQn9QZ13G8drEnVCUXbgwRw6orYw"
-CHAT_ID = "СЮДА_ВСТАВЬТЕ_ВАШ_ID_ЧАТА_ЦИФРАМИ"
+CHAT_ID = "977293445"
 
 def send_telegram(message):
     # Собираем адрес по кусочкам, чтобы хостинг ничего не склеил и не стер
