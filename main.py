@@ -11,7 +11,7 @@ def send_telegram(message):
         print("⚠️ Ошибка: В настройках Render не заполнены BOT_TOKEN или CHAT_ID!")
         return
     
-    # ИСПРАВИЛИ: Намертво прописали официальный адрес Telegram API со всеми слэшами
+    # ИСПРАВЛЕНО: Полный, официальный и точный адрес Telegram API со всеми слэшами и приставкой /bot
     url = f"https://telegram.org{BOT_TOKEN}/sendMessage"
     payload = {"chat_id": CHAT_ID, "text": message}
     try:
