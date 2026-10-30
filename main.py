@@ -1,4 +1,9 @@
 # Робот автоматически прочитает чистый токен и ID чата из настроек Render
+import os
+import time
+import requests
+
+# Робот автоматически и безопасно прочитает ключи из панели настроек Render
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
 
@@ -6,16 +11,13 @@ def send_telegram(message):
     if not BOT_TOKEN or not CHAT_ID:
         print("⚠️ Ошибка: В настройках Render не заполнены BOT_TOKEN или CHAT_ID!")
         return
-    
-    # ЖЕЛЕЗОБЕТОННЫЙ СТАНДАРТНЫЙ АДРЕС: обратите внимание на правильное положение /bot перед токеном
+        
+    # Официальный адрес Telegram API со всеми слэшами
     url = f"https://telegram.org{BOT_TOKEN}/sendMessage"
-    
     payload = {"chat_id": CHAT_ID, "text": message}
     try:
         response = requests.post(url, json=payload)
         print(f"Статус ответа Telegram API: {response.status_code}")
-        if response.status_code != 200:
-            print(f"Текст ошибки от TG: {response.text}")
     except Exception as e:
         print(f"Ошибка сети при отправке в TG: {e}")
 
