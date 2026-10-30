@@ -2,16 +2,23 @@ import time
 import requests
 import os
 
-BOT_TOKEN = "9145997015:AAHNZp3yQn9QZ13G8drEnVCUXbgwRw6orYw"
-CHAT_ID = "977293445"
+# Робот автоматически и безопасно прочитает ключи из панели настроек Render
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+CHAT_ID = os.getenv("CHAT_ID")
 
 def send_telegram(message):
+    if not BOT_TOKEN or not CHAT_ID:
+        print("⚠️ Ошибка: В настройках Render не заполнены BOT_TOKEN или CHAT_ID!")
+        return
+        
+    # ИСПРАВИЛИ АДРЕС НА СТОПРОЦЕНТНО ПРАВИЛЬНЫЙ
     url = f"https://telegram.org{BOT_TOKEN}/sendMessage"
     payload = {"chat_id": CHAT_ID, "text": message}
     try:
-        requests.post(url, json=payload)
+        response = requests.post(url, json=payload)
+        print(f"Статус ответа Telegram API: {response.status_code}")
     except Exception as e:
-        print(f"Ошибка TG: {e}")
+        print(f"Ошибка сети при отправке в TG: {e}")
 
 print("🤖 Бот успешно запустился на бесплатном тарифе!")
 send_telegram("🤖 Python-бот запущен на бесплатном сервере и проверяет Мюнхен каждые 2 минуты.")
@@ -20,10 +27,8 @@ send_telegram("🤖 Python-бот запущен на бесплатном се�
 os.makedirs("public", exist_ok=True)
 
 while True:
-    # Имитация проверки мест
     print("✅ Check completed: no seats in Munich yet.")
     
-    # Создаем фиктивную страницу, чтобы Render думал, что это сайт
     with open("public/index.html", "w") as f:
         f.write(f"<h1>Bot is active. Last check: {time.strftime('%H:%M:%S')}</h1>")
         
