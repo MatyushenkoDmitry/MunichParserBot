@@ -1,7 +1,7 @@
 import time
 import requests
 
-# ВСТАВЬТЕ СЮДА ВАШИ ДАННЫЕ (ОСТАВЬТЕ ТОЛЬКО ЦИФРЫ И СИМВОЛЫ ВНУТРИ КАВЫЧЕК)
+
 BOT_TOKEN = "9145997015:AAHNZp3yQn9QZ13G8drEnVCUXbgwRw6orYw"
 CHAT_ID = "977293445"
 
