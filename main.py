@@ -3,16 +3,17 @@ import os
 import datetime
 import requests
 
-# GitHub автоматически передаст ваши секретные ключи внутрь программы
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
+
+# Проверяем, запущен ли бот вручную пользователем через кнопку
+IS_MANUAL_START = os.getenv("GITHUB_EVENT_NAME") == "workflow_dispatch"
 
 def send_telegram(message):
     if not BOT_TOKEN or not CHAT_ID:
         print("⚠️ Ошибка: Секреты BOT_TOKEN или CHAT_ID не найдены!")
         return
     
-    # Надежная сборка адреса по кусочкам, которая точно работает на Render и GitHub
     part1 = "https://"
     part2 = "api."
     part3 = "telegram.org"
@@ -32,8 +33,6 @@ def send_telegram(message):
 
 def check_munich_slots():
     print("🌍 Запрашиваю данные с сервера ДП 'Документ' в Мюнхене...")
-    
-    # Официальный адрес API Мюнхенского филиала Паспортного сервиса
     url = "https://pasport.org.ua"
     
     headers = {
@@ -42,18 +41,18 @@ def check_munich_slots():
         "Referer": "https://pasport.org.ua"
     }
     
-    # Точное зимнее время Мюнхена (UTC+1)
+    # Точное немецкое время (UTC+1 зимнее)
     now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=1)))
     current_hour = now.hour
     
-    # Включаем отчет на весь часовой диапазон: с 9:00 до 9:59 утра и с 21:00 до 21:59 вечера
-    is_report_time = (current_hour == 9) or (current_hour == 21)
+    # Отчет срабатывает, если наступил нужный час (9 или 21) ИЛИ если пользователь нажал кнопку старта вручную
+    is_report_time = (current_hour == 9) or (current_hour == 21) or IS_MANUAL_START
 
     try:
         response = requests.get(url, headers=headers, timeout=15)
         
         if response.status_code != 200:
-            print(f"⚠️ Сервер временно недоступен. Код ответа сайта: {response.status_code}")
+            print(f"⚠️ Сервер временно недоступен. Код: {response.status_code}")
             return
 
         data = response.json()
@@ -71,10 +70,11 @@ def check_munich_slots():
             
         else:
             print("✅ Проверка выполнена: свободных мест в Мюнхене пока нет.")
-            # Если наступил час отчета — присылаем подтверждение связи
             if is_report_time:
                 time_str = now.strftime('%H:%M')
-                send_telegram(f"🟢 *Плановый отчет ({time_str}):* Бот на посту! Проверил базу данных Мюнхена — свободных мест пока нет.")
+                # Меняем текст в зависимости от типа запуска
+                prefix = "🚀 *Ручной запуск*" if IS_MANUAL_START else "🟢 *Плановый отчет*"
+                send_telegram(f"{prefix} ({time_str}): Бот на посту! Проверил базу данных Мюнхена — свободных мест пока нет.")
                 
     except Exception as e:
         print(f"⚠️ Ошибка при чтении сайта: {e}")
