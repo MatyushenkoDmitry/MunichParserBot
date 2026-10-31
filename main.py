@@ -37,12 +37,12 @@ def check_munich_slots():
     print("🌍 Запрашиваю данные с сервера ДП 'Документ' в Мюнхене...")
     
     # Официальный адрес API Мюнхенского филиала Паспортного сервиса
-    url = "https://pasport.org.ua"
+   url = "https://pasport.org.ua"
     
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
         "Accept": "application/json",
-        "Referer": "https://pasport.org.ua"
+       "Referer": "https://pasport.org.ua"
     }
     
     # Считаем точное зимнее время Мюнхена (переводим серверные часы в пояс UTC+1)
