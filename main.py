@@ -71,4 +71,4 @@ def check_munich_slots():
 # Главная точка запуска
 if __name__ == "__main__":
     send_telegram("🔔 Проверка связи! GitHub успешно передал ключи, я вижу ваш чат.")
-   check_munich_slots()
+    check_munich_slots()
