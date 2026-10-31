@@ -12,7 +12,13 @@ def send_telegram(message):
         print("⚠️ Ошибка: Секреты BOT_TOKEN или CHAT_ID не найдены!")
         return
     
-    url = "https://" + "api." + "telegram.org" + "/bot" + BOT_TOKEN + "/sendMessage"
+    # Надежная сборка адреса по кусочкам, которая точно работает на Render и GitHub
+    part1 = "https://"
+    part2 = "api."
+    part3 = "telegram.org"
+    part4 = "/bot"
+    
+    url = part1 + part2 + part3 + part4 + BOT_TOKEN + "/sendMessage"
     payload = {
         "chat_id": CHAT_ID, 
         "text": message,
@@ -27,7 +33,7 @@ def send_telegram(message):
 def check_munich_slots():
     print("🌍 Запрашиваю данные с сервера ДП 'Документ' в Мюнхене...")
     
-    # Официальный адрес API Мюнхенского филиала
+    # Официальный адрес API Мюнхенского филиала Паспортного сервиса
     url = "https://pasport.org.ua"
     
     headers = {
@@ -36,22 +42,18 @@ def check_munich_slots():
         "Referer": "https://pasport.org.ua"
     }
     
-    # Определяем текущее время (переводим в правильный часовой пояс Германии/Украины)
+    # Точное зимнее время Мюнхена (UTC+1)
     now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=1)))
     current_hour = now.hour
-    current_minute = now.minute
     
-    # Проверяем, время ли сейчас для планового отчета (утро: 09:10-09:15 или вечер: 21:10-21:15)
-    # Диапазон в 5 минут нужен, так как GitHub Actions запускается примерно раз в 5 минут
-    is_report_time = (current_hour == 9 and 10 <= current_minute <= 15) or (current_hour == 21 and 10 <= current_minute <= 15)
+    # Включаем отчет на весь часовой диапазон: с 9:00 до 9:59 утра и с 21:00 до 21:59 вечера
+    is_report_time = (current_hour == 9) or (current_hour == 21)
 
     try:
         response = requests.get(url, headers=headers, timeout=15)
         
         if response.status_code != 200:
-            print(f"⚠️ Сервер временно недоступен. Код: {response.status_code}")
-            if is_report_time:
-                send_telegram(f"📡 *Плановый отчет:* Связь есть, но сам сайт ДП 'Документ' сейчас выдает ошибку {response.status_code}. Я продолжаю попытки!")
+            print(f"⚠️ Сервер временно недоступен. Код ответа сайта: {response.status_code}")
             return
 
         data = response.json()
@@ -69,15 +71,13 @@ def check_munich_slots():
             
         else:
             print("✅ Проверка выполнена: свободных мест в Мюнхене пока нет.")
-            # Если мест нет, но наступило время отчета — присылаем "сигнал жизни"
+            # Если наступил час отчета — присылаем подтверждение связи
             if is_report_time:
                 time_str = now.strftime('%H:%M')
-                send_telegram(f"🟢 *Плановый отчет ({time_str}):* Бот на посту! Проверил базу данных Мюнхена — свободных мест пока нет. Следующий отчет вечером.")
+                send_telegram(f"🟢 *Плановый отчет ({time_str}):* Бот на посту! Проверил базу данных Мюнхена — свободных мест пока нет.")
                 
     except Exception as e:
         print(f"⚠️ Ошибка при чтении сайта: {e}")
-        if is_report_time:
-            send_telegram("📡 *Плановый отчет:* Я в сети, но не смог достучаться до сайта Мюнхена (возможно, защита Cloudflare). Продолжаю сканирование!")
 
 if __name__ == "__main__":
     check_munich_slots()
