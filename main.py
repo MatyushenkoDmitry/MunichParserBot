@@ -33,9 +33,8 @@ def send_telegram(message):
 def check_munich_slots():
     print("🌍 Запускаю обход Cloudflare через бесплатный прокси-шлюз...")
     
-    # ИСПРАВИЛИ: Намертво зафиксировали правильный URL-адрес прокси со всеми слэшами
-    target_url = "https://pasport.org.ua"
-    proxy_url = f"https://allorigins.win{requests.utils.quote(target_url)}"
+    # ЖЕСТКО ИСПРАВИЛИ: Прописали прямой технический путь к шлюзу AllOrigins через параметр ?url=
+    proxy_url = "https://allorigins.win"
     
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
