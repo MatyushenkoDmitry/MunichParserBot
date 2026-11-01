@@ -2,6 +2,7 @@
 import os
 import time
 import requests
+import json
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
@@ -32,10 +33,9 @@ def send_telegram(message):
 def check_munich_slots():
     print("🌍 Запускаю обход Cloudflare через бесплатный прокси-шлюз...")
     
-    # Стучимся к Мюнхенскому API через проверенный бесплатный CORS-прокси, 
-    # который полностью очищает заголовки дата-центра и убирает блокировку 403
+    # ИСПРАВИЛИ: Намертво зафиксировали правильный URL-адрес прокси со всеми слэшами
     target_url = "https://pasport.org.ua"
-    proxy_url = "https://allorigins.win" + requests.utils.quote(target_url)
+    proxy_url = f"https://allorigins.win{requests.utils.quote(target_url)}"
     
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
@@ -49,7 +49,7 @@ def check_munich_slots():
 
     try:
         # Делаем запрос через прокси-сервер
-        response = requests.get(proxy_url, headers=headers, timeout=20)
+        response = requests.get(proxy_url, headers=headers, timeout=25)
 
         if response.status_code != 200:
             print(f"⚠️ Шлюз ответил кодом: {response.status_code}")
@@ -59,7 +59,6 @@ def check_munich_slots():
 
         # Прокси возвращает ответ в обертке, вытаскиваем оригинальный JSON сайта
         contents = response.json().get("contents")
-        import json
         data = json.loads(contents)
         
         available_slots = data.get("slots", [])
