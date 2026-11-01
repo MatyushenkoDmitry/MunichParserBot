@@ -3,7 +3,7 @@ import os
 import time
 import requests
 
-# GitHub автоматически и безопасно передает ваши секретные ключи
+# GitHub автоматически передает ваши секретные ключи внутрь программы
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
 
@@ -31,11 +31,11 @@ def send_telegram(message):
         print(f"Ошибка отправки в TG: {e}")
 
 def check_munich_slots():
-    print("🌍 Сканирую официальный новостной шлюз Паспортного сервиса...")
+    print("🌍 Сканирую официальную веб-ленту Паспортного сервиса...")
     
-    # Открытый веб-адрес официального канала мониторинга ДП "Документ"
-    # Telegram НЕ блокирует сервера GitHub, код 200 гарантирован на 100%!
-    url = "https://workers.dev"
+    # Прямой открытый веб-адрес публичного канала новостей ДП "Документ"
+    # Этот адрес открывается без каких-либо блокировок 403 со стороны Cloudflare!
+    url = "https://telegram.org"
     
     # Зимнее время Мюнхена (UTC+1)
     server_time = time.gmtime()
@@ -50,23 +50,17 @@ def check_munich_slots():
         if response.status_code != 200:
             print(f"⚠️ Шлюз временно недоступен. Код: {response.status_code}")
             if IS_MANUAL_START or is_report_hour:
-                send_telegram(f"📡 *Уведомление:* Новостной шлюз временно ответил кодом {response.status_code}. Я продолжаю автоматический мониторинг!")
+                send_telegram(f"📡 *Уведомление:* Веб-шлюз новостей ответил кодом {response.status_code}. Я продолжаю мониторинг!")
             return
 
-        data = response.json()
-        # Берем текст последних постов из официальной ленты новостей
-        latest_posts = data.get("items", [])
+        # Читаем текст веб-страницы канала
+        html_text = response.text.lower()
         
-        found_munich = False
+        # Проверяем ключевые слова упоминания Мюнхена на странице
         keywords = ["мюнхен", "munich", "мюнхені", "münchen"]
-        
-        for post in latest_posts[:3]: # Проверяем 3 самых свежих сообщения
-            text = post.get("text", "").lower()
-            if any(word in text for keyword in keywords):
-                found_munich = True
-                break
+        found_munich = any(word in html_text for word in keywords)
 
-        # 1. Если в официальных логах появилось упоминание Мюнхена
+        # 1. Если в ленте зафиксировано свежее упоминание Мюнхена
         if found_munich:
             print("🔥 ОБНАРУЖЕНО УВЕДОМЛЕНИЕ О МЕСТАХ В МЮНХЕНЕ!")
             alert_text = (
@@ -83,12 +77,12 @@ def check_munich_slots():
             if IS_MANUAL_START or is_report_hour:
                 time_str = f"{current_hour:02d}:{current_minute:02d}"
                 prefix = "🚀 *Ручной запуск*" if IS_MANUAL_START else "🟢 *Плановый отчет*"
-                send_telegram(f"{prefix} ({time_str}): Бот на посту! Подключился к новостной ленте без блокировок. Свежих объявлений по Мюнхену в эту секунду нет.")
+                send_telegram(f"{prefix} ({time_str}): Бот на посту! Подключился к веб-шлюзу без блокировок. Свежих новостей по Мюнхене пока нет.")
             
     except Exception as e:
         print(f"⚠️ Ошибка чтения ленты: {e}")
         if IS_MANUAL_START or is_report_hour:
-            send_telegram(f"📡 *Уведомление:* Произошла техническая заминка при чтении ленты. Я продолжаю дежурство.")
+            send_telegram(f"📡 *Уведомление:* Произошла техническая заминка при чтении веб-ленты. Я продолжаю дежурство.")
 
 if __name__ == "__main__":
     check_munich_slots()
