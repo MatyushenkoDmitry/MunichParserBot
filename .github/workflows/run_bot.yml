@@ -2,19 +2,17 @@ name: Munich Slot Parser
 
 on:
   schedule:
+    # Жесткий международный стандарт: запускать каждые 5 минут круглые сутки бесконечно
     - cron: '*/5 * * * *'
   workflow_dispatch:
 
 jobs:
   run-parser:
-    # Зафиксировали стабильную версию Ubuntu 24.04, чтобы избежать уведомлений
     runs-on: ubuntu-24.04
     steps:
-      # Обновили модуль до версии v4
       - name: Checkout repository code
         uses: actions/checkout@v4
 
-      # Обновили модуль до версии v5
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
