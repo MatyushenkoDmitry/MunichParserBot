@@ -1,18 +1,17 @@
 name: Munich Slot Parser
 
 on:
-  # Этот блок заставит таймер проснуться прямо сейчас при сохранении файла
-  push:
-    branches:
-      - main
   schedule:
-    # Жесткий пятиминутный интервал (максимальная скорость на GitHub)
+    # Запускать каждые 5 минут круглые сутки без остановки
     - cron: '*/5 * * * *'
   workflow_dispatch:
 
 jobs:
   run-parser:
     runs-on: ubuntu-24.04
+    # Разрешаем серверу обновлять файлы в репозитории, чтобы бот никогда не засыпал
+    permissions:
+      contents: write
     steps:
       - name: Checkout repository code
         uses: actions/checkout@v4
