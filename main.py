@@ -1,20 +1,16 @@
 # Робот автоматически прочитает чистый токен и ID чата из настроек Render
 import os
 import requests
+import datetime
 
-# GitHub автоматически передает ваши секретные ключи внутрь программы
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
 
-# Проверяем, запущен ли бот вручную пользователем через кнопку Run workflow
-IS_MANUAL_START = os.getenv("GITHUB_EVENT_NAME") == "workflow_dispatch"
-
 def send_telegram(message):
     if not BOT_TOKEN or not CHAT_ID:
-        print("⚠️ Ошибка: Секреты BOT_TOKEN или CHAT_ID не найдены!")
+        print("⚠️ Ошибка: Секреты не найдены!")
         return
     
-    # Наша проверенная и безопасная сборка адреса по кусочкам
     part1 = "https://"
     part2 = "api."
     part3 = "telegram.org"
@@ -28,14 +24,11 @@ def send_telegram(message):
     }
     try:
         requests.post(url, json=payload)
-        print("Сообщение успешно отправлено в Telegram!")
     except Exception as e:
-        print(f"Ошибка сети при отправке в TG: {e}")
+        print(f"Ошибка отправки в TG: {e}")
 
 def check_munich_slots():
     print("🌍 Сканирую официальную веб-ленту Паспортного сервиса...")
-    
-    # Открытый веб-адрес публичного канала новостей ДП "Документ"
     url = "https://telegram.org"
     
     try:
@@ -45,32 +38,34 @@ def check_munich_slots():
             return
 
         html_text = response.text.lower()
-        
-        # Проверяем ключевые слова упоминания Мюнхена на странице
         keywords = ["мюнхен", "munich", "мюнхені", "münchen"]
         found_munich = any(word in html_text for word in keywords)
 
-        # 1. ЭКСТРЕННЫЙ АЛЕРТ: Сработает в ЛЮБУЮ секунду дня и ночи, если места появились!
+        # 1. ЭКСТРЕННЫЙ АЛЕРТ (Работает круглосуточно)
         if found_munich:
-            print("🔥 ОБНАРУЖЕНО УВЕДОМЛЕНИЕ О МЕСТАХ В МЮНХЕНЕ!")
             alert_text = (
                 "🚨 **ЭКСТРЕННО: СИСТЕМА ЗАФИКСИРОВАЛА ВЫБРОС МЕСТ В МЮНХЕНЕ!** 🚨\n\n"
-                "📅 В официальной ленте Паспортного сервиса появилось уведомление об открытии записи!\n\n"
                 "🏃‍♂️ Срочно открывайте сайт и ловите слот через BankID:\n"
                 "👉 https://pasport.org.ua"
             )
             send_telegram(alert_text)
             
-        # 2. РЕЖИМ ТИШИНЫ: Если мест нет
+        # 2. РЕЖИМ ТИШИНЫ (Запись лога для вечной работы)
         else:
-            print("✅ Проверка выполнена: свежих объявлений по Мюнхену пока нет.")
+            print("✅ Проверка выполнена: свободных мест пока нет.")
             
-            # Если вы запустили бота кнопкой вручную — он отчитается на телефон
-            if IS_MANUAL_START:
-                send_telegram("🚀 *Ручной запуск:* Бот на посту! Подключился к веб-шлюзу без блокировок. Свободных мест в эту секунду нет.")
+            # ТРЮК ДЛЯ ОБХОДА ПАУЗЫ GITHUB: записываем время проверки в файл
+            now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=1)))
+            with open("last_check.txt", "w") as f:
+                f.write(f"Last successful check: {now.strftime('%Y-%m-%d %H:%M:%S')} (Munich Time)")
             
-            # Если это плановый запуск каждые 5 минут — бот молчит в Telegram, чтобы не спамить,
-            # но честно выполняет проверку и записывает её в логи GitHub!
+            # Автоматически отправляем этот файл обратно на GitHub
+            os.system("git config --global user.name 'MunichBot'")
+            os.system("git config --global user.email 'bot@munich.local'")
+            os.system("git config --global --add safe.directory /github/workspace")
+            os.system("git add last_check.txt")
+            os.system("git commit -m '🤖 Продление активности таймера (Каждые 5 минут)' || echo 'No changes'")
+            os.system("git push || echo 'Push failed'")
             
     except Exception as e:
         print(f"⚠️ Ошибка чтения ленты: {e}")
